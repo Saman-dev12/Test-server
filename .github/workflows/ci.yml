@@ -6,6 +6,16 @@ on:
       - main
     tags:
       - "v*"
+    paths:
+      - "src/**"
+      - "public/**"
+      - "Dockerfile"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.*"
+      - "index.html"
+      - ".github/workflows/ci.yml"
+
   workflow_dispatch:
 
 permissions:
