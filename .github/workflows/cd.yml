@@ -1,4 +1,4 @@
-name: Deploy to Fedora
+name: Deploy
 
 on:
   workflow_run:
@@ -10,27 +10,22 @@ on:
 jobs:
   deploy:
     if: github.event.workflow_run.conclusion == 'success'
-    runs-on: ubuntu-latest
+
+    runs-on:
+      - self-hosted
+
     steps:
-      - name: Deploy over SSH
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.FEDORA_HOST }}
-          username: ${{ secrets.FEDORA_USER }}
-          key: ${{ secrets.FEDORA_SSH_KEY }}
+      - name: Pull latest image
+        run: |
+          cd /home/saman/Desktop/test/hello-server
 
-          script: |
-            set -e
+          docker compose pull
 
-            cd /home/saman/Desktop/test/hello-server
+      - name: Restart containers
+        run: |
+          cd /home/saman/Desktop/test/hello-server
 
-            echo "Pulling latest image..."
-            docker compose pull
+          docker compose up -d
 
-            echo "Restarting containers..."
-            docker compose up -d
-
-            echo "Cleaning old images..."
-            docker image prune -af
-
-            echo "Deployment Complete!"
+      - name: Remove dangling images
+        run: docker image prune -f
